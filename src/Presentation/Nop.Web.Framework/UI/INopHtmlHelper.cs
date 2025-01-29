@@ -27,6 +27,8 @@ public partial interface INopHtmlHelper
     /// <returns>A task that represents the asynchronous operation
     /// The task result contains generated HTML string</returns>
     Task<IHtmlContent> GenerateTitleAsync(bool addDefaultTitle = true, string part = "");
+    
+    IHtmlContent StripSpecialCharacters(string text = "", bool decode = true);
 
     /// <summary>
     /// Add meta description element to the <![CDATA[<head>]]>

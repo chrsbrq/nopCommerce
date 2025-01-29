@@ -331,7 +331,7 @@ public partial class OrderService : IOrderService
             query = query.Where(o => ssIds.Contains(o.ShippingStatusId));
 
         if (!string.IsNullOrEmpty(orderNotes))
-            query = query.Where(o => _orderNoteRepository.Table.Any(oNote => oNote.OrderId == o.Id && oNote.Note.Contains(orderNotes)));
+            query = query.Where(o => o.CheckoutAttributeDescription.Contains(orderNotes) || _orderNoteRepository.Table.Any(oNote => oNote.OrderId == o.Id && oNote.Note.Contains(orderNotes)));
 
         query = from o in query
             join oba in _addressRepository.Table on o.BillingAddressId equals oba.Id

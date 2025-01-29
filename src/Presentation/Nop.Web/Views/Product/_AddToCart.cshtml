@@ -16,7 +16,7 @@
                     <input asp-for="CustomerEnteredPrice" value="@Convert.ToInt32(Math.Ceiling(Model.CustomerEnteredPrice))" class="enter-price-input" />
                 </div>
                 <div class="price-range">
-                    @Model.CustomerEnteredPriceRange
+                    The minimum payment amount is @Model.CustomerEnteredPriceRange
                 </div>
             </div>
         }

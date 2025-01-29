@@ -37,3 +37,6 @@
         @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CheckoutCompletedBottom, additionalData = Model })
     </div>
 </div>
+<script>
+    digitalData.transaction.orderID = "@Model.OrderId";
+</script>

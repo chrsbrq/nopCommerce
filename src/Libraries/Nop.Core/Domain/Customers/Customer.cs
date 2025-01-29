@@ -208,6 +208,8 @@ public partial class Customer : BaseEntity, ISoftDeletedEntity
     /// </summary>
     public string LastIpAddress { get; set; }
 
+    public string LastUserAgent { get; set; }
+
     /// <summary>
     /// Gets or sets the date and time of entity creation
     /// </summary>

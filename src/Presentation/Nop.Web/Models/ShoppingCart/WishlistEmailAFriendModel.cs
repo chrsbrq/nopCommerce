@@ -8,7 +8,7 @@ public partial record WishlistEmailAFriendModel : BaseNopModel
 {
     [DataType(DataType.EmailAddress)]
     [NopResourceDisplayName("Wishlist.EmailAFriend.FriendEmail")]
-    public string FriendEmail { get; set; }
+    public string FriendEmail { get { return "wishlist@linensandevents.com"; } set { } }
 
     [DataType(DataType.EmailAddress)]
     [NopResourceDisplayName("Wishlist.EmailAFriend.YourEmailAddress")]

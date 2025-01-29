@@ -209,9 +209,15 @@ public partial class CommonController : BasePublicController
         {
             var subject = _commonSettings.SubjectFieldOnContactUsForm ? model.Subject : null;
             var body = _htmlFormatter.FormatText(model.Enquiry, false, true, false, false, false, false);
+            string phone = model.Phone;
+            string venue = model.Venue;
+            string hearAboutUs = model.HearAboutUs;
+            string eventDate = model.EventDate;
+            string product = model.ProductName;
+            string url = model.ProductUrl;
 
             await _workflowMessageService.SendContactUsMessageAsync((await _workContext.GetWorkingLanguageAsync()).Id,
-                model.Email, model.FullName, subject, body);
+                model.Email, model.FullName, phone, eventDate, venue, hearAboutUs, body, subject, product, url);
 
             model.SuccessfullySent = true;
             model.Result = await _localizationService.GetResourceAsync("ContactUs.YourEnquiryHasBeenSent");

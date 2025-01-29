@@ -644,6 +644,7 @@ public partial interface IWorkflowMessageService
     /// The task result contains the queued email identifier
     /// </returns>
     Task<IList<int>> SendContactUsMessageAsync(int languageId, string senderEmail, string senderName, string subject, string body);
+    Task<IList<int>> SendContactUsMessageAsync(int languageId, string senderEmail, string senderName, string phone, string eventDate, string venue, string hearAboutUs, string subject, string body, string productName, string productUrl);
 
     /// <summary>
     /// Sends "contact vendor" message

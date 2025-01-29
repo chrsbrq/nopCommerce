@@ -353,6 +353,8 @@ public partial class OrderReportService : IOrderReportService
                     OrderTaxSum = result.Sum(o => o.OrderTax),
                     OrderTotalSum = result.Sum(o => o.OrderTotal),
                     OrederRefundedAmountSum = result.Sum(o => o.RefundedAmount),
+                    OrderSubTotalSum = result.Sum(o => o.OrderSubtotalExclTax),
+                    SumPaymentFees = result.Sum(o => o.PaymentMethodAdditionalFeeExclTax)
                 }).Select(r => new OrderAverageReportLine
             {
                 CountOrders = r.OrderCount,
@@ -360,7 +362,9 @@ public partial class OrderReportService : IOrderReportService
                 OrderPaymentFeeExclTaxSum = r.OrderPaymentFeeExclTaxSum,
                 SumTax = r.OrderTaxSum,
                 SumOrders = r.OrderTotalSum,
-                SumRefundedAmount = r.OrederRefundedAmountSum
+                SumRefundedAmount = r.OrederRefundedAmountSum,
+                SumSubTotal = r.OrderSubTotalSum,
+                SumPaymentFees = r.SumPaymentFees
             })
             .FirstOrDefaultAsync();
 
@@ -370,7 +374,10 @@ public partial class OrderReportService : IOrderReportService
             SumShippingExclTax = decimal.Zero,
             OrderPaymentFeeExclTaxSum = decimal.Zero,
             SumTax = decimal.Zero,
-            SumOrders = decimal.Zero
+            SumOrders = decimal.Zero,
+            SumRefundedAmount = decimal.Zero,
+            SumSubTotal = decimal.Zero,
+            SumPaymentFees = decimal.Zero
         };
         return item;
     }

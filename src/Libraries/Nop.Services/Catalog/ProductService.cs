@@ -18,6 +18,7 @@ using Nop.Services.Security;
 using Nop.Services.Shipping.Date;
 using Nop.Services.Stores;
 using Nop.Services.Vendors;
+using LinqToDB.Data;
 
 namespace Nop.Services.Catalog;
 
@@ -67,6 +68,7 @@ public partial class ProductService : IProductService
     protected readonly IWorkContext _workContext;
     protected readonly LocalizationSettings _localizationSettings;
     private static readonly char[] _separator = [','];
+    INopDataProvider _dataProvider;
 
     #endregion
 
@@ -847,7 +849,7 @@ public partial class ProductService : IProductService
     /// A task that represents the asynchronous operation
     /// The task result contains the products
     /// </returns>
-    public virtual async Task<IPagedList<Product>> SearchProductsAsync(
+    public virtual async Task<IPagedList<Product>> SearchProductsAsyncOld(
         int pageIndex = 0,
         int pageSize = int.MaxValue,
         IList<int> categoryIds = null,
@@ -1178,6 +1180,197 @@ public partial class ProductService : IProductService
         }
 
         return products;
+    }
+
+    /// <summary>
+    /// Search products
+    /// </summary>
+    /// <param name="pageIndex">Page index</param>
+    /// <param name="pageSize">Page size</param>
+    /// <param name="categoryIds">Category identifiers</param>
+    /// <param name="manufacturerIds">Manufacturer identifiers</param>
+    /// <param name="storeId">Store identifier; 0 to load all records</param>
+    /// <param name="vendorId">Vendor identifier; 0 to load all records</param>
+    /// <param name="warehouseId">Warehouse identifier; 0 to load all records</param>
+    /// <param name="productType">Product type; 0 to load all records</param>
+    /// <param name="visibleIndividuallyOnly">A values indicating whether to load only products marked as "visible individually"; "false" to load all records; "true" to load "visible individually" only</param>
+    /// <param name="excludeFeaturedProducts">A value indicating whether loaded products are marked as featured (relates only to categories and manufacturers); "false" (by default) to load all records; "true" to exclude featured products from results</param>
+    /// <param name="priceMin">Minimum price; null to load all records</param>
+    /// <param name="priceMax">Maximum price; null to load all records</param>
+    /// <param name="productTagId">Product tag identifier; 0 to load all records</param>
+    /// <param name="keywords">Keywords</param>
+    /// <param name="searchDescriptions">A value indicating whether to search by a specified "keyword" in product descriptions</param>
+    /// <param name="searchManufacturerPartNumber">A value indicating whether to search by a specified "keyword" in manufacturer part number</param>
+    /// <param name="searchSku">A value indicating whether to search by a specified "keyword" in product SKU</param>
+    /// <param name="searchProductTags">A value indicating whether to search by a specified "keyword" in product tags</param>
+    /// <param name="languageId">Language identifier (search for text searching)</param>
+    /// <param name="filteredSpecOptions">Specification options list to filter products; null to load all records</param>
+    /// <param name="orderBy">Order by</param>
+    /// <param name="showHidden">A value indicating whether to show hidden records</param>
+    /// <param name="overridePublished">
+    /// null - process "Published" property according to "showHidden" parameter
+    /// true - load only "Published" products
+    /// false - load only "Unpublished" products
+    /// </param>
+    /// <returns>
+    /// A task that represents the asynchronous operation
+    /// The task result contains the products
+    /// </returns>
+    public virtual async Task<IPagedList<Product>> SearchProductsAsync(
+        int pageIndex = 0,
+        int pageSize = int.MaxValue,
+        IList<int> categoryIds = null,
+        IList<int> manufacturerIds = null,
+        int storeId = 0,
+        int vendorId = 0,
+        int warehouseId = 0,
+        ProductType? productType = null,
+        bool visibleIndividuallyOnly = false,
+        bool excludeFeaturedProducts = false,
+        decimal? priceMin = null,
+        decimal? priceMax = null,
+        int productTagId = 0,
+        string keywords = null,
+        bool searchDescriptions = false,
+        bool searchManufacturerPartNumber = true,
+        bool searchSku = true,
+        bool searchProductTags = false,
+        int languageId = 0,
+        IList<SpecificationAttributeOption> filteredSpecOptions = null,
+        ProductSortingEnum orderBy = ProductSortingEnum.Position,
+        bool showHidden = false,
+        bool? overridePublished = null)
+    {
+        //search by keyword
+        bool searchLocalizedValue = false;
+        if (languageId > 0)
+        {
+            if (showHidden)
+            {
+                searchLocalizedValue = true;
+            }
+            else
+            {
+                //ensure that we have at least two published languages
+                var totalPublishedLanguages = _languageService.GetAllLanguages().Count;
+                searchLocalizedValue = totalPublishedLanguages >= 2;
+            }
+        }
+
+        //validate "categoryIds" parameter
+        if (categoryIds != null && categoryIds.Contains(0))
+            categoryIds.Remove(0);
+
+        //validate "manufacturerIds" parameter
+        if (manufacturerIds != null && manufacturerIds.Contains(0))
+            manufacturerIds.Remove(0);
+
+        //Access control list. Allowed customer roles
+        Customer currentCustomerAsync = await _workContext.GetCurrentCustomerAsync();
+
+        string filteredSpecs = string.Empty;
+        if ((filteredSpecOptions != null ? (filteredSpecOptions.Count > 0 ? true : false) : false) != false)
+        {
+            int[] specificationAttributeOptionList = filteredSpecOptions.Select(x => x.Id).Distinct().ToArray();
+            filteredSpecs = string.Join(",", specificationAttributeOptionList);
+        }
+
+
+        //stored procedures are enabled and supported by the database. 
+        //It's much faster than the LINQ implementation below 
+
+        #region Use stored procedure
+
+        //pass category identifiers as comma-delimited string
+        string commaSeparatedCategoryIds = categoryIds == null ? "" : string.Join(",", categoryIds);
+
+        //pass manufacturer identifiers as comma-delimited string
+        string commaSeparatedManufacturerIds = manufacturerIds == null ? "" : string.Join(",", manufacturerIds);
+
+
+        //pass customer role identifiers as comma-delimited string
+        string commaSeparatedAllowedCustomerRoleIds = "";
+        if (!_catalogSettings.IgnoreAcl)
+        {
+            int[] customerRoleIdsAsync = await _customerService.GetCustomerRoleIdsAsync(currentCustomerAsync, false);
+            commaSeparatedAllowedCustomerRoleIds = string.Join(",", customerRoleIdsAsync);
+        }
+
+
+        //some databases don't support int.MaxValue
+        if (pageSize == int.MaxValue)
+            pageSize = int.MaxValue - 1;
+
+        int? productTypeId = productType.HasValue ? new int?((int)productType.GetValueOrDefault()) : new int?();
+
+        //prepare parameters
+
+        DataParameter stringParameter1 = SqlParameterHelper.GetStringParameter("CategoryIds", commaSeparatedCategoryIds);
+        DataParameter stringParameter2 = SqlParameterHelper.GetStringParameter("ManufacturerIds", commaSeparatedManufacturerIds);
+        DataParameter int32Parameter1 = SqlParameterHelper.GetInt32Parameter("StoreId", new int?(!_catalogSettings.IgnoreStoreLimitations ? storeId : 0));
+        DataParameter int32Parameter2 = SqlParameterHelper.GetInt32Parameter("VendorId", new int?(vendorId));
+        DataParameter int32Parameter3 = SqlParameterHelper.GetInt32Parameter("WarehouseId", new int?(warehouseId));
+        DataParameter int32Parameter4 = SqlParameterHelper.GetInt32Parameter("ProductTypeId", productTypeId);
+        DataParameter booleanParameter1 = SqlParameterHelper.GetBooleanParameter("VisibleIndividuallyOnly", new bool?(visibleIndividuallyOnly));
+        DataParameter booleanParameter2 = SqlParameterHelper.GetBooleanParameter("ExcludeFeaturedProducts", new bool?(excludeFeaturedProducts));
+        DataParameter decimalParameter1 = SqlParameterHelper.GetDecimalParameter("PriceMin", priceMin);
+        DataParameter decimalParameter2 = SqlParameterHelper.GetDecimalParameter("PriceMax", priceMax);
+        DataParameter int32Parameter5 = SqlParameterHelper.GetInt32Parameter("ProductTagId", new int?(productTagId));
+        DataParameter stringParameter3 = SqlParameterHelper.GetStringParameter("Keywords", keywords);
+        DataParameter booleanParameter3 = SqlParameterHelper.GetBooleanParameter("SearchDescriptions", new bool?(searchDescriptions));
+        DataParameter booleanParameter4 = SqlParameterHelper.GetBooleanParameter("SearchManufacturerPartNumber", new bool?(searchManufacturerPartNumber));
+        DataParameter booleanParameter5 = SqlParameterHelper.GetBooleanParameter("SearchSku", new bool?(searchSku));
+        DataParameter booleanParameter6 = SqlParameterHelper.GetBooleanParameter("SearchProductTags", new bool?(searchProductTags));
+        DataParameter int32Parameter6 = SqlParameterHelper.GetInt32Parameter("LanguageId", new int?(searchLocalizedValue ? languageId : 0));
+        DataParameter stringParameter4 = SqlParameterHelper.GetStringParameter("FilteredSpecs", filteredSpecs);
+        DataParameter int32Parameter7 = SqlParameterHelper.GetInt32Parameter("OrderBy", new int?((int)orderBy));
+        DataParameter booleanParameter7 = SqlParameterHelper.GetBooleanParameter("ShowHidden", new bool?(showHidden));
+        DataParameter booleanParameter8 = SqlParameterHelper.GetBooleanParameter("OverridePublished", overridePublished);
+        DataParameter stringParameter5 = SqlParameterHelper.GetStringParameter("AllowedCustomerRoleIds", !_catalogSettings.IgnoreAcl ? commaSeparatedAllowedCustomerRoleIds : "");
+        DataParameter int32Parameter8 = SqlParameterHelper.GetInt32Parameter("PageIndex", new int?(pageIndex));
+        DataParameter int32Parameter9 = SqlParameterHelper.GetInt32Parameter("PageSize", new int?(pageSize));
+        DataParameter booleanParameter9 = SqlParameterHelper.GetBooleanParameter("UseFullTextSearch", new bool?(true));
+        DataParameter int32Parameter10 = SqlParameterHelper.GetInt32Parameter("FullTextMode", new int?((int)FulltextSearchMode.And));
+        DataParameter pTotalRecords = SqlParameterHelper.GetOutputInt32Parameter("TotalRecords");
+
+
+        IList<Product> products2 = await _dataProvider.QueryProcAsync<Product>("FNS_FullTextSearch_ProductLoadAllPaged", new DataParameter[27]
+          {
+                stringParameter1,
+                stringParameter2,
+                int32Parameter1,
+                int32Parameter2,
+                int32Parameter3,
+                int32Parameter4,
+                booleanParameter1,
+                booleanParameter2,
+                decimalParameter1,
+                decimalParameter2,
+                int32Parameter5,
+                stringParameter3,
+                booleanParameter3,
+                booleanParameter4,
+                booleanParameter5,
+                booleanParameter6,
+                int32Parameter6,
+                stringParameter4,
+                int32Parameter7,
+                booleanParameter7,
+                booleanParameter8,
+                stringParameter5,
+                int32Parameter8,
+                int32Parameter9,
+                booleanParameter9,
+                int32Parameter10,
+                pTotalRecords
+          });
+
+
+        var totalRecords = pTotalRecords.Value != DBNull.Value ? Convert.ToInt32(pTotalRecords.Value) : 0;
+        return (IPagedList<Product>)new PagedList<Product>(products2, pageIndex, pageSize, new int?(totalRecords));
+
+
+        #endregion
     }
 
     /// <summary>

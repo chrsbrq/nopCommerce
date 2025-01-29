@@ -7,6 +7,7 @@ public partial record HeaderLinksModel : BaseNopModel
 {
     public bool IsAuthenticated { get; set; }
     public string CustomerName { get; set; }
+    public string CustomerId { get; set; }
 
     public bool ShoppingCartEnabled { get; set; }
     public int ShoppingCartItems { get; set; }

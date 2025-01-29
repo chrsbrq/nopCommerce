@@ -272,4 +272,6 @@ public partial record OrderAggreratorModel : BaseNopModel
     public string AggregatorShipping { get; set; }
     public string AggregatorTax { get; set; }
     public string AggregatorTotal { get; set; }
+    public string AggregatorSubtotal { get; set; }
+    public string AggregatorPaymentFeeTotal { get; set; }
 }

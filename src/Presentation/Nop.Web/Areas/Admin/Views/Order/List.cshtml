@@ -372,9 +372,35 @@
                                         Width = "120",
                                         Render = new RenderDate()
                                     });
+                                    gridModel.ColumnCollection.Add(new ColumnProperty(nameof(OrderModel.PaymentMethod))
+                                    {
+                                    Title = "Payment Method",
+                                        Width = "120"
+                                    });
+                                    gridModel.ColumnCollection.Add(new ColumnProperty(nameof(OrderModel.CheckoutAttributeInfo))
+                                    {
+                                        Title = "Invoice #",
+                                        Width = "150"
+                                    });
+                                    
                                     //a vendor does not have access to this functionality
                                     if (!Model.IsLoggedInAsVendor)
                                     {
+                                        gridModel.ColumnCollection.Add(new ColumnProperty(nameof(OrderModel.OrderSubtotalExclTax))
+                                        {
+                                            Title = "Sub Total",
+                                            Width = "100"
+                                        });
+                                        gridModel.ColumnCollection.Add(new ColumnProperty(nameof(OrderModel.Tax))
+                                        {
+                                            Title = "Tax",
+                                            Width = "100"
+                                        });
+                                        gridModel.ColumnCollection.Add(new ColumnProperty(nameof(OrderModel.PaymentMethodAdditionalFeeExclTax))
+                                        {
+                                            Title = "Payment Fee",
+                                            Width = "100"
+                                        });                                       
                                         gridModel.ColumnCollection.Add(new ColumnProperty(nameof(OrderModel.OrderTotal))
                                         {
                                             Title = T("Admin.Orders.Fields.OrderTotal").Text,

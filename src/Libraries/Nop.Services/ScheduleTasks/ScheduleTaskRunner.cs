@@ -133,6 +133,7 @@ public partial class ScheduleTaskRunner : IScheduleTaskRunner
 
         try
         {
+            await _logger.InformationAsync("Starting scheduled task" + scheduleTask.Type);
             //get expiration time
             var expirationInSeconds = Math.Min(scheduleTask.Seconds, 300) - 1;
             var expiration = TimeSpan.FromSeconds(expirationInSeconds);

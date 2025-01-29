@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Net.Http.Headers;
 using Nop.Core;
 using Nop.Core.Domain.Customers;
 using Nop.Core.Http.Extensions;
@@ -88,6 +89,7 @@ public sealed class SaveIpAddressAttribute : TypeFilterAttribute
                 !currentIpAddress.Equals(customer.LastIpAddress, StringComparison.InvariantCultureIgnoreCase))
             {
                 customer.LastIpAddress = currentIpAddress;
+                customer.LastUserAgent = context.HttpContext.Request.Headers[HeaderNames.UserAgent];
 
                 //update customer without event notification
                 await _customerRepository.UpdateAsync(customer, false);

@@ -1696,7 +1696,7 @@ public partial class ShoppingCartController : BasePublicController
             //email
             await _workflowMessageService.SendWishlistEmailAFriendMessageAsync(customer,
                 (await _workContext.GetWorkingLanguageAsync()).Id, model.YourEmailAddress,
-                model.FriendEmail, _htmlFormatter.FormatText(model.PersonalMessage, false, true, false, false, false, false));
+                "wishlist@linensandevents.com", _htmlFormatter.FormatText(model.PersonalMessage, false, true, false, false, false, false));
 
             model.SuccessfullySent = true;
             model.Result = await _localizationService.GetResourceAsync("Wishlist.EmailAFriend.SuccessfullySent");

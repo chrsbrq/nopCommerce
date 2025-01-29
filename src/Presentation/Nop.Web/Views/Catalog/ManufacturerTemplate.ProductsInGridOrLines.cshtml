@@ -30,6 +30,11 @@
     @await Html.PartialAsync("_CatalogFilters", Model.CatalogProductsModel)
 }
 
+<script>
+    digitalData.page.category.primaryCategory = "@NopHtml.StripSpecialCharacters(Model.Name)";
+    digitalData.page.category.pageType = "theme";
+</script>
+
 <div class="page manufacturer-page">
     <div class="page-title">
         <h1>@Model.Name</h1>

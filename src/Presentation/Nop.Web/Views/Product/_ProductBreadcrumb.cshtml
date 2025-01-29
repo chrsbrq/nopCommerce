@@ -7,7 +7,8 @@
 
 @{
     var breadcrumbDelimiter = commonSettings.BreadcrumbDelimiter;
-    
+    var bcList = "";
+
     NopHtml.AddJsonLdParts(Model.JsonLd);
 }
 @if (Model.Enabled)
@@ -32,6 +33,10 @@
                     <span class="delimiter">@breadcrumbDelimiter</span>
                 </li>
             }
+            @if (bcList.Length > 0)
+            {
+                bcList = bcList.TrimEnd(',');
+            }
             <li>
                 <strong class="current-item">@Model.ProductName</strong>
                 <span id="@(Url.RouteUrl<Product>(new { SeName = Model.ProductSeName }))"></span>              
@@ -39,4 +44,16 @@
             </li>
         </ul>
     </div>
-}
+}    <script>
+         digitalData.page.pageInfo.breadCrumbs = [@Html.Raw(bcList)];
+         if (digitalData.page.pageInfo.breadCrumbs.length > 0) {
+             digitalData.page.category.primaryCategory = digitalData.page.pageInfo.breadCrumbs[0];
+         }
+         if (digitalData.page.pageInfo.breadCrumbs.length > 1) {
+             digitalData.page.category.subCategory1 = digitalData.page.pageInfo.breadCrumbs[1];
+         }
+         if (digitalData.page.pageInfo.breadCrumbs.length > 2) {
+             digitalData.page.category.subCategory2 = digitalData.page.pageInfo.breadCrumbs[2];
+         }
+         digitalData.page.category.pageType = "pdp";
+</script>

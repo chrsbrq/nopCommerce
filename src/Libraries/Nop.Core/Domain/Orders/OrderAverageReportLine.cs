@@ -1,4 +1,4 @@
-namespace Nop.Core.Domain.Orders;
+﻿namespace Nop.Core.Domain.Orders;
 
 /// <summary>
 /// Represents an order average report line
@@ -34,4 +34,12 @@ public partial class OrderAverageReportLine
     /// Gets or sets the refunded amount summary
     /// </summary>
     public decimal SumRefundedAmount { get; set; }
+    /// <summary>
+    /// Gets or sets the order total summary
+    /// </summary>
+    public decimal SumSubTotal { get; set; }
+    /// <summary>
+    /// Gets or sets the order total summary
+    /// </summary>
+    public decimal SumPaymentFees { get; set; }
 }

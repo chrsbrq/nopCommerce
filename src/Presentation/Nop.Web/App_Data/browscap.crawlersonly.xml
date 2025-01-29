@@ -3612,6 +3612,9 @@
   <browscapitem name="Amazonbot">
     <item name="Crawler" value="true" />
   </browscapitem>
+  <browscapitem name="*amazonbot*">
+    <item name="Crawler" value="true" />
+  </browscapitem>
   <browscapitem name="Mozilla/5.0 (*Mac OS X 10?10*) applewebkit* (*khtml*like*gecko*) Version/* Safari/* (Amazonbot/*">
     <item name="Crawler" value="true" />
   </browscapitem>
@@ -13927,6 +13930,9 @@
     <item name="Crawler" value="true" />
   </browscapitem>
   <browscapitem name="Core_Class_HttpClient_Cached">
+    <item name="Crawler" value="true" />
+  </browscapitem>
+  <browscapitem name="*bot*">
     <item name="Crawler" value="true" />
   </browscapitem>
 </browsercapitems>

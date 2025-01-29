@@ -1059,7 +1059,9 @@ public partial class OrderModelFactory : IOrderModelFactory
                     CustomerEmail = billingAddress.Email,
                     CustomerFullName = $"{billingAddress.FirstName} {billingAddress.LastName}",
                     CustomerId = order.CustomerId,
-                    CustomOrderNumber = order.CustomOrderNumber
+                    CustomOrderNumber = order.CustomOrderNumber,
+                    PaymentMethod = order.PaymentMethodSystemName.Replace("Payments.", ""),
+                    CheckoutAttributeInfo = order.CheckoutAttributeDescription != null ? order.CheckoutAttributeDescription.Replace("Invoice Number: ", "") : ""
                 };
 
                 //convert dates to the user time
@@ -1071,6 +1073,9 @@ public partial class OrderModelFactory : IOrderModelFactory
                 orderModel.PaymentStatus = await _localizationService.GetLocalizedEnumAsync(order.PaymentStatus);
                 orderModel.ShippingStatus = await _localizationService.GetLocalizedEnumAsync(order.ShippingStatus);
                 orderModel.OrderTotal = await _priceFormatter.FormatPriceAsync(order.OrderTotal, true, false);
+                orderModel.OrderSubtotalExclTax = await _priceFormatter.FormatPriceAsync(order.OrderSubtotalExclTax, true, false);
+                orderModel.PaymentMethodAdditionalFeeExclTax = await _priceFormatter.FormatPriceAsync(order.PaymentMethodAdditionalFeeExclTax, true, false);
+                orderModel.Tax = await _priceFormatter.FormatPriceAsync(order.OrderTax, true, false);
 
                 return orderModel;
             });

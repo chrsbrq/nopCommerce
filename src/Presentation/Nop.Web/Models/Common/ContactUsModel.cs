@@ -24,4 +24,18 @@ public partial record ContactUsModel : BaseNopModel
     public string Result { get; set; }
 
     public bool DisplayCaptcha { get; set; }
+    public string ProductName { get; set; }
+    public string ProductUrl { get; set; }
+
+    [NopResourceDisplayName("ContactUs.Phone")]
+    public string Phone { get; set; }
+
+    [NopResourceDisplayName("ContactUs.EventDate")]
+    public string EventDate { get; set; }
+
+    [NopResourceDisplayName("ContactUs.HearAboutUs")]
+    public string HearAboutUs { get; set; }
+
+    [NopResourceDisplayName("ContactUs.Venue")]
+    public string Venue { get; set; }
 }

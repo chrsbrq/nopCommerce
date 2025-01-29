@@ -2,6 +2,8 @@
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Encodings.Web;
+using System.Text.RegularExpressions;
+using System.Web;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
@@ -170,6 +172,30 @@ public partial class NopHtmlHelper : INopHtmlHelper
             result = defaultTitle;
 
         return new HtmlString(_htmlEncoder.Encode(result ?? string.Empty));
+    }
+
+    /// <summary>
+    /// Generate safe content for JavaScript (used in data layer for Adobe Analytics)
+    /// </summary>
+    /// <param name="addDefaultTitle">A value indicating whether to insert a default title</param>
+    /// <param name="part">Title part</param>
+    /// <returns>A task that represents the asynchronous operation
+    /// The task result contains generated HTML string</returns>
+    public virtual IHtmlContent StripSpecialCharacters(string text = "", bool decode = true)
+    {
+        if (text == null)
+        {
+            return new HtmlString("");
+        }
+        else
+        {
+            if (decode)
+            {
+                text = HttpUtility.HtmlDecode(text);
+            }
+            text = Regex.Replace(text, @"[^0-9a-zA-Z ]+", "");
+            return new HtmlString(text);
+        }
     }
 
     /// <summary>

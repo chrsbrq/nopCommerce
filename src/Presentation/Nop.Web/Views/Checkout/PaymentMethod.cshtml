@@ -1,4 +1,8 @@
 ﻿@model CheckoutPaymentMethodModel
+@using Nop.Core
+@using Nop.Services.Customers
+@inject IWorkContext workContext
+@inject ICustomerService customerService
 @{
     Layout = "_ColumnsOne";
 
@@ -7,6 +11,8 @@
     //page class
     NopHtml.AppendPageCssClassParts("html-checkout-page");
     NopHtml.AppendPageCssClassParts("html-payment-method-page");
+    var customer = await workContext.GetCurrentCustomerAsync();
+    var isUserAdmin = await customerService.IsAdminAsync(customer);
 }
 <div class="page checkout-page payment-method-page">
     @await Component.InvokeAsync(typeof(CheckoutProgressViewComponent), new { step = CheckoutProgressStep.Payment })
@@ -53,7 +59,9 @@
                             {
                                 paymentMethodName = T("Checkout.SelectPaymentMethod.MethodAndFee", paymentMethodName, paymentMethod.Fee).Text;
                             }
-                            <li>
+                            if ((paymentMethodName == "Admin Payment Received" && isUserAdmin) || paymentMethodName != "Admin Payment Received")
+                            {
+                                <li>
                                 <div class="method-name">
                                     @if (!string.IsNullOrEmpty(paymentMethod.LogoUrl))
                                     {
@@ -72,7 +80,8 @@
                                         }
                                     </div>
                                 </div>
-                            </li>
+                                </li>
+                            }
                         }
                     </ul>
                     <div class="buttons">

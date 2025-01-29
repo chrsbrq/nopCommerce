@@ -69,8 +69,8 @@ public partial class PaymentService : IPaymentService
         //We should strip out any white space or dash in the CC number entered.
         if (!string.IsNullOrWhiteSpace(processPaymentRequest.CreditCardNumber))
         {
-            processPaymentRequest.CreditCardNumber = processPaymentRequest.CreditCardNumber.Replace(" ", string.Empty);
-            processPaymentRequest.CreditCardNumber = processPaymentRequest.CreditCardNumber.Replace("-", string.Empty);
+            //processPaymentRequest.CreditCardNumber = processPaymentRequest.CreditCardNumber.Replace(" ", string.Empty);
+            //processPaymentRequest.CreditCardNumber = processPaymentRequest.CreditCardNumber.Replace("-", string.Empty);
         }
 
         var customer = await _customerService.GetCustomerByIdAsync(processPaymentRequest.CustomerId);

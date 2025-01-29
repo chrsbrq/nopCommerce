@@ -1,4 +1,6 @@
 ﻿using System.Net;
+using DocumentFormat.OpenXml.Bibliography;
+using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Nop.Core;
 using Nop.Core.Domain.Blogs;
 using Nop.Core.Domain.Catalog;
@@ -2583,8 +2585,12 @@ public partial class WorkflowMessageService : IWorkflowMessageService
     /// A task that represents the asynchronous operation
     /// The task result contains the queued email identifier
     /// </returns>
+    public virtual async Task<IList<int>> SendContactUsMessageAsync(int languageId, string senderEmail, string senderName, string subject, string body)
+    {
+        return await SendContactUsMessageAsync(languageId, senderEmail, senderName, body, "", "", "", subject, body, "", "");
+    }
     public virtual async Task<IList<int>> SendContactUsMessageAsync(int languageId, string senderEmail,
-        string senderName, string subject, string body)
+        string senderName, string phone, string eventDate, string venue, string hearAboutUs, string subject, string body, string productName, string productUrl)
     {
         var store = await _storeContext.GetCurrentStoreAsync();
         languageId = await EnsureLanguageIsActiveAsync(languageId, store.Id);
@@ -2615,7 +2621,16 @@ public partial class WorkflowMessageService : IWorkflowMessageService
             {
                 fromEmail = emailAccount.Email;
                 fromName = emailAccount.DisplayName;
-                body = $"<strong>From</strong>: {WebUtility.HtmlEncode(senderName)} - {WebUtility.HtmlEncode(senderEmail)}<br /><br />{body}";
+                body = string.Format("<strong>Product</strong>: {0}<br /><strong>Product URL</strong>: {1}<br /><strong>From</strong>: {2} - {3}<br />Phone - {4}<br />Date - {5}<br />Venue - {6}<br />Hear about us? - {7}<br />{8}",
+                    productName,
+                    productUrl,
+                    WebUtility.HtmlEncode(senderName),
+                    WebUtility.HtmlEncode(senderEmail),
+                    WebUtility.HtmlEncode(phone),
+                    WebUtility.HtmlEncode(eventDate),
+                    WebUtility.HtmlEncode(venue),
+                    WebUtility.HtmlEncode(hearAboutUs),
+                    body);
             }
             else
             {

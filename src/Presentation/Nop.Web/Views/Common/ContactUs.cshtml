@@ -7,7 +7,24 @@
     //page class
     NopHtml.AppendPageCssClassParts("html-contact-page");
 }
-<div class="page contact-page">
+<div class="topic-block contact-us-msg" id="contact-thanks" style="display: none">
+    <div class="page contact-page">
+        <div class="page-title">
+            <h1>@T("PageTitle.ContactUs")</h1>
+        </div>
+        <div class="page-body">
+            <div class="topic-block">
+                <div class="topic-block-body">
+                    <span class="contact-head-bold">Thank you for your inquiry</span>
+                    <br /><br />
+                    We will get back with you as soon as possible.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page contact-page" id="contact-form-body" style="display: none">
     <div class="page-title">
         <h1>@T("PageTitle.ContactUs")</h1>
     </div>
@@ -38,11 +55,35 @@
                             <nop-required />
                             <span asp-validation-for="Email"></span>
                         </div>
+                        <div class="inputs">
+                            <label asp-for="Phone" asp-postfix=":"></label>
+                            <input asp-for="Phone" class="phone" />
+                            <nop-required />
+                            <span asp-validation-for="Phone"></span>
+                        </div>
+                        <div class="inputs">
+                            <label asp-for="EventDate" asp-postfix=":"></label>
+                            <input asp-for="EventDate" class="eventDate" />
+                            <nop-required />
+                            <span asp-validation-for="EventDate"></span>
+                        </div>
+                        <div class="inputs">
+                            <label asp-for="Venue" asp-postfix=":"></label>
+                            <input asp-for="Venue" class="venue" />
+                            <nop-required />
+                            <span asp-validation-for="Venue"></span>
+                        </div>
+                        <div class="inputs">
+                            <label asp-for="HearAboutUs" asp-postfix=":"></label>
+                            <input asp-for="HearAboutUs" class="HearAboutUs" />
+                            <nop-required />
+                            <span asp-validation-for="HearAboutUs"></span>
+                        </div>
                         @if (Model.SubjectEnabled)
                         {
                             <div class="inputs">
                                 <label asp-for="Subject" asp-postfix=":"></label>
-                                <input asp-for="Subject" placeholder="@T("ContactUs.Subject.Hint")" class="subject" />
+                                <input asp-for="Subject" placeholder="@T("ContactUs.Subject.Hint")" class="subject" maxlength="100" />
                                 <nop-required />
                                 <span asp-validation-for="Subject"></span>
                             </div>
@@ -67,3 +108,33 @@
         @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ContactUsBottom, additionalData = Model })
     </div>
 </div>
+
+<script>
+    function ShowThankYou() {
+        $("#contact-thanks").show();
+        $("#contact-form-body").hide();
+        $("#contact-header").hide();
+    }
+
+    function ShowContact() {
+        $("#contact-thanks").hide();
+        $("#contact-form-body").show();
+        $("#contact-header").hide();
+    }
+    var fromValue = (new URL(location.href)).searchParams.get('from');
+    if (fromValue != null && fromValue != "") {
+        ShowThankYou();
+    }
+
+    $(function () {
+        try{
+            if ($(".result").first().text().indexOf("successfully sent") > 0) {
+                ShowThankYou();
+            }
+        }catch(exception){
+
+        }
+    })
+</script>
+
+
