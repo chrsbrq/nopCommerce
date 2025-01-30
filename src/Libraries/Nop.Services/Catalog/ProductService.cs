@@ -111,7 +111,8 @@ public partial class ProductService : IProductService
         IVendorService vendorService,
         IStoreMappingService storeMappingService,
         IWorkContext workContext,
-        LocalizationSettings localizationSettings)
+        LocalizationSettings localizationSettings,
+        INopDataProvider dataProvider)
     {
         _catalogSettings = catalogSettings;
         _commonSettings = commonSettings;
@@ -151,6 +152,7 @@ public partial class ProductService : IProductService
         _vendorService = vendorService;
         _workContext = workContext;
         _localizationSettings = localizationSettings;
+        _dataProvider = dataProvider;
     }
 
     #endregion
