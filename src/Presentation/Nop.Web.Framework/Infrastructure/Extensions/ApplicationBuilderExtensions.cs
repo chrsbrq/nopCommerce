@@ -163,7 +163,7 @@ public static class ApplicationBuilderExtensions
                             var logger = EngineContext.Current.Resolve<ILogger>();
                             var workContext = EngineContext.Current.Resolve<IWorkContext>();
 
-                            await logger.ErrorAsync($"Error 404. The requested page ({originalPath}) was not found",
+                            await logger.InformationAsync($"Error 404. The requested page ({originalPath}) was not found",
                                 customer: await workContext.GetCurrentCustomerAsync());
                         }
                     }
