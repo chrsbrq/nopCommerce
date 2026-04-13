@@ -31,8 +31,10 @@
 }
 
 <script>
-    digitalData.page.category.primaryCategory = "@NopHtml.StripSpecialCharacters(Model.Name)";
-    digitalData.page.category.pageType = "theme";
+    if (typeof digitalData !== 'undefined' && digitalData != null) {
+        digitalData.page.category.primaryCategory = "@NopHtml.StripSpecialCharacters(Model.Name)";
+        digitalData.page.category.pageType = "theme";
+    }
 </script>
 
 <div class="page manufacturer-page">

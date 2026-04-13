@@ -102,5 +102,7 @@
     @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CustomerTopicDetailsBottom, additionalData = Model })
 </div>
 <script>
-    digitalData.page.category.pageType = "topic";
+    if (typeof digitalData !== 'undefined' && digitalData != null) {
+        digitalData.page.category.pageType = "topic";
+    }
 </script>

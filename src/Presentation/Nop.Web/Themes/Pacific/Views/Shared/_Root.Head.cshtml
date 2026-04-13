@@ -1,4 +1,5 @@
-﻿@using Nop.Core
+﻿@using Microsoft.AspNetCore.Html
+@using Nop.Core
 @using Nop.Core.Configuration
 @using Nop.Core.Domain.Catalog
 @using Nop.Core.Domain.Common
@@ -36,6 +37,7 @@
     NopHtml.AppendScriptParts(ResourceLocation.Footer, "~/lib_npm/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js");
     NopHtml.AppendScriptParts(ResourceLocation.Footer, "~/lib_npm/jquery-validation/jquery.validate.min.js");
     NopHtml.AppendScriptParts(ResourceLocation.Footer, "~/lib_npm/jquery/jquery.min.js");
+    NopHtml.AppendScriptParts(ResourceLocation.Footer, "~/js/js.cookie.min.js");
 
     //custom tag(s);
     if (!string.IsNullOrEmpty(seoSettings.CustomHeadTags))
@@ -51,6 +53,38 @@
     var description = await @NopHtml.GenerateMetaDescriptionAsync();
     var keywords = await NopHtml.GenerateMetaKeywordsAsync();
     var currentPageClass = (await (await Html.PartialAsync("_CurrentPageClass")).RenderHtmlContentAsync()).Trim();
+
+    static string AsPlainText(IHtmlContent? content)
+    {
+        if (content is null)
+            return string.Empty;
+        if (content is HtmlString hs)
+            return hs.Value ?? string.Empty;
+        using var writer = new StringWriter();
+        content.WriteTo(writer, HtmlEncoder.Default);
+        return writer.ToString();
+    }
+    var pageTitle = AsPlainText(title);
+    var firstSegment = pageTitle.Length > 0
+        ? pageTitle.Split('|', 2, StringSplitOptions.None)[0].Trim()
+        : string.Empty;
+    var pageName = AsPlainText(NopHtml.StripSpecialCharacters(firstSegment, decode: true));
+
+
+    var currentPath = @Context.Request.Path.Value;
+    if (currentPath == "/")
+    {
+        currentPath = "/home";
+    }
+    if (currentPath.IndexOf("?") > 0)
+    {
+        currentPath = currentPath.Substring(0, currentPath.IndexOf("?"));
+    }
+    var pageId = currentPath.Replace("/", "");
+    if (pageId.IndexOf("?") > 0)
+    {
+        pageId = pageId.Substring(0, pageId.IndexOf("?"));
+    }
 }
 
 <!DOCTYPE html>
@@ -58,6 +92,14 @@
 <head>
     <title>@title</title>
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+    @if (@Context.Request.Host.Host == "www.linensandevents.com")
+    {
+        <script src="//assets.adobedtm.com/5297f765e579/818bba4e745d/launch-85791e20fb1b.min.js" async></script>
+    }
+    else
+    {
+        <script src="//assets.adobedtm.com/5297f765e579/818bba4e745d/launch-ec10a8977a05-development.min.js" async></script>
+    }
     <meta name="description" content="@description" />
     <meta name="keywords" content="@keywords" />
     <meta name="generator" content="nopCommerce" />
@@ -80,6 +122,39 @@
     @NopHtml.GenerateInlineScripts(ResourceLocation.Head)
     <!--Powered by nopCommerce - https://www.nopCommerce.com-->
     @Html.Raw(commonSettings.HeaderCustomHtml)
+
+    <meta name="google-site-verification" content="l76ofWTk1f7--gN7nD7IeEtq3K30tTHzxwQDllBVKDA" />
+
+    <script>
+
+         digitalData = {
+             page: {
+                 pageInfo: {
+                     pageID: "@pageId",
+                     pageName: "@NopHtml.StripSpecialCharacters(pageName)",
+                     destinationURL: "@currentPath",
+                     breadCrumbs: [],
+                     host: "@Context.Request.Host.Host"
+                 },
+                 category: {
+                     primaryCategory: "",
+                     subCategory1: "",
+                     subCategory2: "",
+                     pageType: "",
+                 }
+             },
+             transaction: {
+
+             }
+         };
+
+         var prev = Cookies.get("prev");
+         if(prev != ""){
+             digitalData.page.pageInfo.prevPageName = prev;
+         }
+         Cookies.set("prev", digitalData.page.pageInfo.pageID);
+
+    </script>
 </head>
 <body class="@currentPageClass">
     <nop-antiforgery-token />

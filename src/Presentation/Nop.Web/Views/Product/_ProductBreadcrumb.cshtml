@@ -45,15 +45,17 @@
         </ul>
     </div>
 }    <script>
-         digitalData.page.pageInfo.breadCrumbs = [@Html.Raw(bcList)];
-         if (digitalData.page.pageInfo.breadCrumbs.length > 0) {
-             digitalData.page.category.primaryCategory = digitalData.page.pageInfo.breadCrumbs[0];
+         if (typeof digitalData !== 'undefined' && digitalData != null) {
+             digitalData.page.pageInfo.breadCrumbs = [@Html.Raw(bcList)];
+             if (digitalData.page.pageInfo.breadCrumbs.length > 0) {
+                 digitalData.page.category.primaryCategory = digitalData.page.pageInfo.breadCrumbs[0];
+             }
+             if (digitalData.page.pageInfo.breadCrumbs.length > 1) {
+                 digitalData.page.category.subCategory1 = digitalData.page.pageInfo.breadCrumbs[1];
+             }
+             if (digitalData.page.pageInfo.breadCrumbs.length > 2) {
+                 digitalData.page.category.subCategory2 = digitalData.page.pageInfo.breadCrumbs[2];
+             }
+             digitalData.page.category.pageType = "pdp";
          }
-         if (digitalData.page.pageInfo.breadCrumbs.length > 1) {
-             digitalData.page.category.subCategory1 = digitalData.page.pageInfo.breadCrumbs[1];
-         }
-         if (digitalData.page.pageInfo.breadCrumbs.length > 2) {
-             digitalData.page.category.subCategory2 = digitalData.page.pageInfo.breadCrumbs[2];
-         }
-         digitalData.page.category.pageType = "pdp";
-</script>
+    </script>

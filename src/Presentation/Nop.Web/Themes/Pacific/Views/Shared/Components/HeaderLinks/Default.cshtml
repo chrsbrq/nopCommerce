@@ -18,6 +18,17 @@
 @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.HeaderLinksBefore, additionalData = Model })
 @if (Model.IsAuthenticated)
 {
+    <script>
+        if (typeof digitalData !== 'undefined' && digitalData != null) {
+            var profile = {
+                profileID: "@Model.CustomerId",
+                userName: "@NopHtml.StripSpecialCharacters(Model.CustomerName)",
+                status: "login",
+                rmsId: ""
+            };
+            digitalData.user = profile;
+        }
+    </script>
     <div class="hedar-links-item">
         <a href="@Url.RouteUrl("CustomerInfo")" class="ico-account">@T("Account.MyAccount")@*@Model.CustomerName*@</a>
     </div>
@@ -54,6 +65,17 @@ else
 }
 @if (Model.WishlistEnabled)
 {
+    <script>
+        if (typeof digitalData !== 'undefined' && digitalData != null) {
+            var profile = {
+                profileID:"",
+                userName: "",
+                status: "logout",
+                rmsId: ""
+            };
+            digitalData.user = profile;
+        }
+    </script>
     <div class="hedar-links-item">
         <a href="@Url.RouteUrl("Wishlist")" class="ico-wishlist">
             <span class="wishlist-label">@T("Wishlist")</span>

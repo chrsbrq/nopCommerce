@@ -80,6 +80,23 @@
     var categoryNavigation = await Component.InvokeAsync("CategoryNavigation", new { currentCategoryId = currentCategoryId, currentProductId = currentProductId });
 }
 
+<script>
+    if (typeof digitalData !== 'undefined' && digitalData != null) {
+        var digitalProduct = {
+            productInfo: {
+                productID: "@Model.Sku",
+                productName: "@NopHtml.StripSpecialCharacters(Model.Name)",
+                description: "@NopHtml.StripSpecialCharacters(Model.ShortDescription)",
+                attributes:{
+                    price: "@Model.ProductPrice.PriceValue.Value.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)",
+                    theme: [],
+                }
+            }
+        }
+
+        digitalData.product = [digitalProduct];
+    }
+</script>
 <div class="page product-details-page @productPageLayoutClass">
     <div class="page-body">
         @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductDetailsTop, additionalData = Model })

@@ -34,6 +34,12 @@
         @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.WishlistTop, additionalData = Model })
         @if (Model.Items.Count > 0)
         {
+            <div style="text-align:center; padding-bottom:20px">
+                @if (Model.IsEditable && Model.EmailWishlistEnabled)
+                {
+                    @T("Wishlist.SendForInvoiceInstruction")
+                }
+            </div>
             <div class="wishlist-content">
                 @if (Model.Warnings.Count > 0)
                 {
@@ -235,17 +241,13 @@
 
                     <div class="wishlist-info cart-info-stick">
                         <div class="buttons">
-                            @if (Model.DisplayAddToCart)
-                            {
-                                <button type="submit" name="addtocartbutton" class="button-2 wishlist-add-to-cart-button">@T("ShoppingCart.AddToCart")</button>
-                            }
                             @if (Model.IsEditable)
                             {
                                 <button type="submit" name="updatecart" id="updatecart" class="button-2 update-wishlist-button">@T("Wishlist.UpdateCart")</button>
                             }
                             @if (Model.IsEditable && Model.EmailWishlistEnabled)
                             {
-                                <button type="button" class="button-2 email-a-friend-wishlist-button" onclick="setLocation('@Url.RouteUrl("EmailWishlist")')">@T("Wishlist.EmailAFriend")</button>
+                                <button type="button" class="button-2 wishlist-add-to-cart-button" onclick="setLocation('@Url.RouteUrl("EmailWishlist")')">@T("Wishlist.EmailAFriend")</button>
                             }
                         </div>
                         @if (Model.IsEditable && Model.Items.Count > 0)

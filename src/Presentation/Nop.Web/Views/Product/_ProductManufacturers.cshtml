@@ -35,5 +35,7 @@
 }
 
 <script>
-    digitalData.product[0].productInfo.attributes.theme = [@Html.Raw(themes)];
+    if (typeof digitalData !== 'undefined' && digitalData != null) {
+        digitalData.product[0].productInfo.attributes.theme = [@Html.Raw(themes)];
+    }
 </script>
