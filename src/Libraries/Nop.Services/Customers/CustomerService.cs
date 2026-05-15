@@ -1,4 +1,4 @@
-﻿using System.Xml;
+using System.Xml;
 using Nop.Core;
 using Nop.Core.Caching;
 using Nop.Core.Domain.Blogs;
@@ -706,19 +706,36 @@ public partial class CustomerService : ICustomerService
             select new { CustomerId = guest.Id };
 
         await using var tmpGuests = await _dataProvider.CreateTempDataStorageAsync("tmp_guestsToDelete", guestsToDelete);
-        await using var tmpAddresses = await _dataProvider.CreateTempDataStorageAsync("tmp_guestsAddressesToDelete",
-            _customerAddressMappingRepository.Table
-                .Where(ca => tmpGuests.Any(c => c.CustomerId == ca.CustomerId))
-                .Select(ca => new { AddressId = ca.AddressId }));
 
-        //delete guests
-        var totalRecordsDeleted = await _customerRepository.DeleteAsync(c => tmpGuests.Any(tmp => tmp.CustomerId == c.Id));
+        // One huge DELETE joins Customer to tmpGuests and hits the default SQL command timeout on large stores.
+        // Materialize ids then delete in batches (same order as before: Customer, GA, Address per batch).
+        const int batchSize = 500;
+        var allGuestIds = await tmpGuests
+            .Select(t => t.CustomerId)
+            .OrderBy(id => id)
+            .ToListAsync();
 
-        //delete attributes
-        await _gaRepository.DeleteAsync(ga => tmpGuests.Any(c => c.CustomerId == ga.EntityId) && ga.KeyGroup == nameof(Customer));
+        var totalRecordsDeleted = 0;
 
-        //delete m -> m addresses
-        await _customerAddressRepository.DeleteAsync(a => tmpAddresses.Any(tmp => tmp.AddressId == a.Id));
+        for (var i = 0; i < allGuestIds.Count; i += batchSize)
+        {
+            var customerIds = allGuestIds.Skip(i).Take(batchSize).ToList();
+            if (customerIds.Count == 0)
+                break;
+
+            var addressIds = await _customerAddressMappingRepository.Table
+                .Where(ca => customerIds.Contains(ca.CustomerId))
+                .Select(ca => ca.AddressId)
+                .Distinct()
+                .ToListAsync();
+
+            totalRecordsDeleted += await _customerRepository.DeleteAsync(c => customerIds.Contains(c.Id));
+
+            await _gaRepository.DeleteAsync(ga => customerIds.Contains(ga.EntityId) && ga.KeyGroup == nameof(Customer));
+
+            if (addressIds.Count > 0)
+                await _customerAddressRepository.DeleteAsync(a => addressIds.Contains(a.Id));
+        }
 
         return totalRecordsDeleted;
     }
