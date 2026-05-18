@@ -1,5 +1,6 @@
 ﻿using Nop.Core;
 using Nop.Core.Caching;
+using Nop.Core.Configuration;
 using Nop.Core.Domain.ScheduleTasks;
 using Nop.Core.Infrastructure;
 using Nop.Services.Localization;
@@ -14,6 +15,7 @@ public partial class ScheduleTaskRunner : IScheduleTaskRunner
 {
     #region Fields
 
+    protected readonly AppSettings _appSettings;
     protected readonly ILocalizationService _localizationService;
     protected readonly ILocker _locker;
     protected readonly ILogger _logger;
@@ -24,12 +26,14 @@ public partial class ScheduleTaskRunner : IScheduleTaskRunner
 
     #region Ctor
 
-    public ScheduleTaskRunner(ILocalizationService localizationService,
+    public ScheduleTaskRunner(AppSettings appSettings,
+        ILocalizationService localizationService,
         ILocker locker,
         ILogger logger,
         IScheduleTaskService scheduleTaskService,
         IStoreContext storeContext)
     {
+        _appSettings = appSettings;
         _localizationService = localizationService;
         _locker = locker;
         _logger = logger;
@@ -145,7 +149,9 @@ public partial class ScheduleTaskRunner : IScheduleTaskRunner
         {
             var store = await _storeContext.GetCurrentStoreAsync();
 
-            var scheduleTaskUrl = $"{store.Url}{NopTaskDefaults.ScheduleTaskPath}";
+            var internalUrl = _appSettings.Get<CommonConfig>().InternalStoreUrl;
+            var baseUrl = !string.IsNullOrEmpty(internalUrl) ? internalUrl : store.Url;
+            var scheduleTaskUrl = $"{baseUrl.TrimEnd('/')}/{NopTaskDefaults.ScheduleTaskPath}";
 
             scheduleTask.Enabled = scheduleTask.Enabled && !scheduleTask.StopOnError;
             scheduleTask.LastEndUtc = DateTime.UtcNow;

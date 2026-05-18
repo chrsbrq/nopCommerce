@@ -1,4 +1,5 @@
 ﻿using Nop.Core;
+using Nop.Core.Configuration;
 
 namespace Nop.Services.Common;
 
@@ -16,10 +17,16 @@ public partial class StoreHttpClient
     #region Ctor
 
     public StoreHttpClient(HttpClient client,
+        AppSettings appSettings,
         IWebHelper webHelper)
     {
-        //configure client
-        client.BaseAddress = new Uri(webHelper.GetStoreLocation());
+        //prefer the internal callback URL when configured, so server-to-server requests bypass external proxies/WAFs
+        var internalUrl = appSettings.Get<CommonConfig>().InternalStoreUrl;
+        var baseAddress = !string.IsNullOrEmpty(internalUrl)
+            ? (internalUrl.EndsWith('/') ? internalUrl : internalUrl + "/")
+            : webHelper.GetStoreLocation();
+
+        client.BaseAddress = new Uri(baseAddress);
 
         _httpClient = client;
     }

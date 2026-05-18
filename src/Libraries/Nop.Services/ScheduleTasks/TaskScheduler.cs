@@ -64,8 +64,10 @@ public partial class TaskScheduler : ITaskScheduler
 
         var store = await storeContext.GetCurrentStoreAsync();
 
-        var scheduleTaskUrl = $"{store.Url.TrimEnd('/')}/{NopTaskDefaults.ScheduleTaskPath}";
-        var timeout = _appSettings.Get<CommonConfig>().ScheduleTaskRunTimeout;
+        var commonConfig = _appSettings.Get<CommonConfig>();
+        var baseUrl = !string.IsNullOrEmpty(commonConfig.InternalStoreUrl) ? commonConfig.InternalStoreUrl : store.Url;
+        var scheduleTaskUrl = $"{baseUrl.TrimEnd('/')}/{NopTaskDefaults.ScheduleTaskPath}";
+        var timeout = commonConfig.ScheduleTaskRunTimeout;
 
         foreach (var scheduleTask in scheduleTasks)
         {

@@ -36,6 +36,13 @@ public partial class CommonConfig : IConfig
     public int? ScheduleTaskRunTimeout { get; protected set; } = null;
 
     /// <summary>
+    /// Gets or sets an internal URL used for server-to-server callbacks (scheduled tasks, keep-alive).
+    /// When set, replaces the public store URL for these requests so they bypass external proxies/WAFs (e.g. Cloudflare).
+    /// Leave empty to use the configured store URL.
+    /// </summary>
+    public string InternalStoreUrl { get; protected set; } = "";
+
+    /// <summary>
     /// Gets or sets a value of "Cache-Control" header value for static content (in seconds)
     /// </summary>
     public string StaticFilesCacheControl { get; protected set; } = "public,max-age=31536000";
