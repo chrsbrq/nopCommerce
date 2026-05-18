@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.32002.185
+# Visual Studio Version 18
+VisualStudioVersion = 18.5.11709.299 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{E4ACA93B-D3DE-4557-B069-F1DB42925A4B}"
 EndProject
@@ -32,6 +32,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nop.Plugin.Payments.ForteCC", "..\..\nopCommerce-lande\plugins\Nop.Plugin.Payments.ForteCC\Nop.Plugin.Payments.ForteCC.csproj", "{1141BB8D-65DE-451C-B813-7256B442C8A5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nop.Plugin.Payments.ForteECheck", "..\..\nopCommerce-lande\plugins\Nop.Plugin.Payments.ForteECheck\Nop.Plugin.Payments.ForteECheck.csproj", "{D18D48B9-C83A-4937-8826-51958660449B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nop.Plugin.MultiFactorAuth.GoogleAuthenticator", "Plugins\Nop.Plugin.MultiFactorAuth.GoogleAuthenticator\Nop.Plugin.MultiFactorAuth.GoogleAuthenticator.csproj", "{346E3A06-6796-C542-30B9-5659B5E6D0D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -153,6 +155,18 @@ Global
 		{D18D48B9-C83A-4937-8826-51958660449B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{D18D48B9-C83A-4937-8826-51958660449B}.Release|x86.ActiveCfg = Release|Any CPU
 		{D18D48B9-C83A-4937-8826-51958660449B}.Release|x86.Build.0 = Release|Any CPU
+		{346E3A06-6796-C542-30B9-5659B5E6D0D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{346E3A06-6796-C542-30B9-5659B5E6D0D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{346E3A06-6796-C542-30B9-5659B5E6D0D6}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{346E3A06-6796-C542-30B9-5659B5E6D0D6}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{346E3A06-6796-C542-30B9-5659B5E6D0D6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{346E3A06-6796-C542-30B9-5659B5E6D0D6}.Debug|x86.Build.0 = Debug|Any CPU
+		{346E3A06-6796-C542-30B9-5659B5E6D0D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{346E3A06-6796-C542-30B9-5659B5E6D0D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{346E3A06-6796-C542-30B9-5659B5E6D0D6}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{346E3A06-6796-C542-30B9-5659B5E6D0D6}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{346E3A06-6796-C542-30B9-5659B5E6D0D6}.Release|x86.ActiveCfg = Release|Any CPU
+		{346E3A06-6796-C542-30B9-5659B5E6D0D6}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -168,6 +182,7 @@ Global
 		{C34EF9BC-9CE4-41FB-BC6D-1FA36556A782} = {6F80198D-25BA-4CB5-A616-5B31565896F4}
 		{1141BB8D-65DE-451C-B813-7256B442C8A5} = {6F80198D-25BA-4CB5-A616-5B31565896F4}
 		{D18D48B9-C83A-4937-8826-51958660449B} = {6F80198D-25BA-4CB5-A616-5B31565896F4}
+		{346E3A06-6796-C542-30B9-5659B5E6D0D6} = {E4ACA93B-D3DE-4557-B069-F1DB42925A4B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EE72A8B2-332A-4175-9319-6726D36E9D25}

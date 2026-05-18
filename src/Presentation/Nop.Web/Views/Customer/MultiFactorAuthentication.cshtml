@@ -80,6 +80,31 @@
                 <button type="submit" id="save-mfa-settings-button" name="save-mfa-settsing-button" class="button-1 save-customer-mfa-button">@T("Common.Save")</button>
             </div>
         </form>
+        <script>
+            $(function () {
+                var $isEnabled = $('#@Html.IdFor(m => m.IsEnabled)');
+                var $providers = $('#mfa-provider-block input[type="radio"]');
+
+                // when enabled is checked, auto-select the first provider if none selected
+                $isEnabled.on('change', function () {
+                    if ($(this).is(':checked') && $providers.filter(':checked').length === 0) {
+                        $providers.first().prop('checked', true);
+                    }
+                });
+
+                // when a provider is selected, auto-check enabled
+                $providers.on('change', function () {
+                    if ($(this).is(':checked')) {
+                        $isEnabled.prop('checked', true);
+                    }
+                });
+
+                // on page load: if a provider is already selected, ensure enabled is checked
+                if ($providers.filter(':checked').length > 0) {
+                    $isEnabled.prop('checked', true);
+                }
+            });
+        </script>
         @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.CustomerMultiFactorAuthenticationBottom, additionalData = Model })
     </div>
 </div>

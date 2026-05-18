@@ -208,3 +208,4 @@ src/Tests/Nop.Tests/Connections.resx
 /src/Presentation/Nop.Web/Properties
 /src/Presentation/Nop.Web/App_Data/dev-https-cert
 /.claude
+src/.claude
