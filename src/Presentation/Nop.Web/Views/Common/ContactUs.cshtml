@@ -99,7 +99,14 @@
                         </div>
                         <div class="inputs">
                             <label asp-for="HearAboutUs" asp-postfix=":"></label>
-                            <input asp-for="HearAboutUs" class="HearAboutUs" />
+                            <select asp-for="HearAboutUs" class="HearAboutUs">
+                                <option value="">-- Select --</option>
+                                <option value="Friend">Friend</option>
+                                <option value="Wedding Planner">Wedding Planner</option>
+                                <option value="Venue">Venue</option>
+                                <option value="Google">Google</option>
+                                <option value="Other">Other</option>
+                            </select>
                             <nop-required />
                             <span asp-validation-for="HearAboutUs"></span>
                         </div>
@@ -107,7 +114,12 @@
                         {
                             <div class="inputs">
                                 <label asp-for="Subject" asp-postfix=":"></label>
-                                <input asp-for="Subject" placeholder="@T("ContactUs.Subject.Hint")" class="subject" maxlength="100" />
+                                <select asp-for="Subject" class="subject">
+                                    <option value="">-- Select --</option>
+                                    <option value="Need a quote">Need a quote</option>
+                                    <option value="Schedule Appointment">Schedule Appointment</option>
+                                    <option value="General Inquiry">General Inquiry</option>
+                                </select>
                                 <nop-required />
                                 <span asp-validation-for="Subject"></span>
                             </div>

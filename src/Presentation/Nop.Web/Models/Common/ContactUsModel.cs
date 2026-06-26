@@ -10,6 +10,7 @@ public partial record ContactUsModel : BaseNopModel
     [NopResourceDisplayName("ContactUs.Email")]
     public string Email { get; set; }
 
+    [Required]
     [NopResourceDisplayName("ContactUs.Subject")]
     public string Subject { get; set; }
     public bool SubjectEnabled { get; set; }
@@ -33,6 +34,7 @@ public partial record ContactUsModel : BaseNopModel
     [NopResourceDisplayName("ContactUs.EventDate")]
     public string EventDate { get; set; }
 
+    [Required]
     [NopResourceDisplayName("ContactUs.HearAboutUs")]
     public string HearAboutUs { get; set; }
 
